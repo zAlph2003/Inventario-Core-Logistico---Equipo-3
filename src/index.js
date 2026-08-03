@@ -3,7 +3,9 @@ import express from 'express';
 // Se importan los enrutadores
 
 import inventoryRoutes from "./routes/inventory.routes.js";
-import reportRoutes from "./routes/report.routes.js"
+import categoryRoutes from "./routes/category.routes.js";
+import proveedoresRoutes from "./routes/proveedores.routes.js"
+import reportRoutes from "./routes/report.routes.js";
 
 const app = express();
 const PORT = 3000;
@@ -20,6 +22,8 @@ app.get('/', (req, res) => {
 // Se montan las rutas
 
 app.use('/api/inventario', inventoryRoutes);
+app.use('/api/categoria', categoryRoutes);
+app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/reportes', reportRoutes);
 
 // Arrancar el servidor
