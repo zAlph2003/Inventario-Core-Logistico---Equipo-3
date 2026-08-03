@@ -37,7 +37,7 @@ INSERT INTO insumos (nombre_insumo, unidad_medida, stock_actual, stock_minimo, p
 
 INSERT INTO proveedores_insumo (fecha_emision, fk_id_proveedor, fk_id_insumos, costo_unitario, cantidad_pedido, tiempo_entrega_dias, encargado_despacho, telefono_encargado_despacho, estado_envio, observaciones) VALUES
 
-('2026-07-01', 1, 1, 6.5000, 20.0000, 2, 'Luis Rojas', '0424-1112233', 'En proceso', 'Entrega completa. La carne llegó en excelente estado.'),
+('2026-07-01', 1, 1, 6.5000, 20.0000, 2, 'Luis Rojas', '0424-1112233', 'En Proceso', 'Entrega completa. La carne llegó en excelente estado.'),
 
 ('2026-07-08', 3, 3, 1.2000, 15.0000, 1, 'Ana Silva', '0414-3334455', 'En camino', 'Llamar al llegar al restaurante porque el timbre está dañado.'),
 
