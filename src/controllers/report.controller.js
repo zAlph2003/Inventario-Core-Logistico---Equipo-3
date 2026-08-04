@@ -1,22 +1,29 @@
 import { ReportModel } from "../models/report.model.js";
 
 export class ReportController {
-  static async getSummary(req, res) {
+  // GET /api/reportes/resumen
+  static async getResumen(req, res) {
     try {
-      const summary = await ReportModel.getSummary();
-      return res.json(summary);
+      const resumen = await ReportModel.getResumen();
+      return res.json(resumen);
     } catch (e) {
+      console.error("Error al obtener resumen de reportes:", e);
       return res.status(500).json({ error: e.message });
     }
   }
 
-  static async getOrdersReport(req, res) {
+  // GET /api/reportes/pedidos
+  static async getPedidos(req, res) {
     try {
-      const { estado, periodo } = req.query;
-      const orders = await ReportModel.getOrdersReport({ estado, periodo }); //REVISAR
-      return res.json(orders);
+      // Capturamos posibles query params como ? estado=Recibido
+      const { estado } = req.query;
+      const pedidos = await ReportModel.getPedidos(estado);
+      return res.json(pedidos);
     } catch (e) {
+      console.error("Error al obtener reporte de pedidos:", e);
       return res.status(500).json({ error: e.message });
     }
   }
 }
+
+export default ReportController;

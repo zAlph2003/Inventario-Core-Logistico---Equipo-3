@@ -3,7 +3,7 @@ import { ReportController } from "../controllers/report.controller.js";
 
 const router = Router();
 
-router.get("/resumen", ReportController.getSummary);
-router.get("/pedidos", ReportController.getOrdersReport);
+router.get("/resumen", ReportController.getResumen);
+router.get("/pedidos", ReportController.getPedidos);
 
 export default router;

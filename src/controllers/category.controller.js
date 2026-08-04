@@ -57,7 +57,7 @@ export class CategoryController {
             // Código de error de Postgres para violación de Foreign Key constraint
             if (e.code === '23503') {
             return res.status(400).json({
-            error: "No se puede eliminar la categoria porque está vinculado a proveedores u otros registros."
+            error: "No se puede eliminar la categoria porque está vinculado a insumos"
             });
             }
     return res.status(500).json({ error: e.message });
