@@ -133,3 +133,33 @@ BEFORE UPDATE OF stock_actual ON insumos
 FOR EACH ROW
 EXECUTE FUNCTION prevenir_stock_negativo();
 
+
+-- TRIGGER 5: DESCUENTO DEL STOCK POR RECETAS
+-- Se encarga de descontar el stock de uno o mas insumos dependiendo de la receta que tengo un pedido
+-- Verificar el nombre exacto de la tabla y columna 'fk_id_pedido' perteneciente a equipo1.detalle_orden
+-- Verificar el nombre de la columna de estado de equipo1.ordenes
+CREATE OR REPLACE FUNCTION inventario.descontar_stock_por_receta()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Validar que la orden haya cambiado a un estado de preparación o despacho
+    IF (NEW.Estatus_Orden IN ('Preparando', 'Entregado') AND OLD.Estatus_Orden NOT IN ('Preparando', 'Entregado')) THEN
+        
+        -- Actualizar el stock_actual restando (cantidad_requerida_receta * cantidad_platos_pedidos)
+        UPDATE inventario.insumos i
+        SET stock_actual = i.stock_actual - (r.cantidad_requerida * d.cantidad)
+        FROM inventario.recetas r
+        JOIN equipo1.detalle_orden d ON d.fk_id_producto = r.fk_id_producto
+        WHERE d.fk_id_pedido = NEW.id_pedido
+          AND i.id_insumos = r.fk_id_insumos;
+
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_descontar_stock ON equipo1.ordenes;
+
+CREATE TRIGGER trg_descontar_stock
+AFTER UPDATE OF Estatus_Orden ON equipo1.ordenes
+FOR EACH ROW
+EXECUTE FUNCTION inventario.descontar_stock_por_receta();

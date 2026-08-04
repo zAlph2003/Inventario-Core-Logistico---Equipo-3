@@ -35,9 +35,9 @@ CREATE TABLE insumos(
 	id_insumos BIGSERIAL PRIMARY KEY, 
 	nombre_insumo VARCHAR(100) NOT NULL UNIQUE, 
 	unidad_medida VARCHAR(20) NOT NULL, 
-	stock_actual NUMERIC(12,4) NOT NULL DEFAULT 0,
-	stock_minimo NUMERIC(12,4) NOT NULL DEFAULT 0, 
-	punto_reorden NUMERIC(12,4) NOT NULL, 
+	stock_actual NUMERIC(12,2) NOT NULL DEFAULT 0,
+	stock_minimo NUMERIC(12,2) NOT NULL DEFAULT 0, 
+	punto_reorden NUMERIC(12,2) NOT NULL, 
 	fk_id_categoria BIGINT, 
 	CONSTRAINT fk_id_categoria_fkey FOREIGN KEY (fk_id_categoria) REFERENCES categoria (id_categoria)
 );
@@ -87,8 +87,8 @@ CREATE TABLE proveedores_insumo(
 	fecha_emision DATE DEFAULT CURRENT_DATE,
 	fk_id_proveedor BIGINT NOT NULL,
 	fk_id_insumos BIGINT NOT NULL,
-	costo_unitario NUMERIC(12,4) NOT NULL, 
-	cantidad_pedido NUMERIC(12,4) NOT NULL,
+	costo_unitario NUMERIC(12,2) NOT NULL, 
+	cantidad_pedido NUMERIC(12,2) NOT NULL,
 	tiempo_entrega_dias INTEGER NOT NULL,
 	encargado_despacho VARCHAR(100),
 	telefono_encargado_despacho VARCHAR(30),
@@ -98,3 +98,22 @@ CREATE TABLE proveedores_insumo(
 	CONSTRAINT fk_insumo_fkey FOREIGN KEY (fk_id_insumos) REFERENCES insumos (id_insumos)
 );
 
+
+-- Tabla intermedia para desglosar qué insumos usa cada plato
+-- Atributo: id_receta es la llave primaria de la tabla recetas y acepta un entero grande incremental
+-- Atributo: fk_id_producto acepta numeros enteros grandes no nulos
+-- Atributo fk_id_insumos acepta numeros enteros grandes no nulos
+-- Atributo: cantidad_requerida acepta un decimal de 12 digitos y 4 decimales, y es la cantidad exacta gastada por unidad vendida
+-- El atributo fk_id_insumos es una llave foranea y hace referencia al id_insumos de la tabla insumos
+-- El atributo fk_id_producto es una llave foranea que hace referencia al id_producto de la tabla producto del equipo 1 (VERIFICAR NOMBRE TANTO DE LA TABLA COMO DEL ATRIBUTO)
+CREATE TABLE IF NOT EXISTS inventario.recetas (
+    id_receta BIGSERIAL PRIMARY KEY,
+    fk_id_producto BIGINT NOT NULL,      
+    fk_id_insumos BIGINT NOT NULL,       
+    cantidad_requerida NUMERIC(12,2) NOT NULL, 
+
+    CONSTRAINT fk_receta_insumo 
+        FOREIGN KEY (fk_id_insumos) 
+        REFERENCES inventario.insumos(id_insumos) 
+        ON DELETE CASCADE
+);
