@@ -142,14 +142,14 @@ CREATE OR REPLACE FUNCTION inventario.descontar_stock_por_receta()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Validar que la orden haya cambiado a un estado de preparación o despacho
-    IF (NEW.Estatus_Orden IN ('Preparando', 'Entregado') AND OLD.Estatus_Orden NOT IN ('Preparando', 'Entregado')) THEN
+    IF (NEW.estado_orden IN ('preparando', 'listo', 'entregado') AND OLD.estado_orden NOT IN ('preparando', 'listo', 'entregado')) THEN
         
         -- Actualizar el stock_actual restando (cantidad_requerida_receta * cantidad_platos_pedidos)
         UPDATE inventario.insumos i
         SET stock_actual = i.stock_actual - (r.cantidad_requerida * d.cantidad)
         FROM inventario.recetas r
-        JOIN equipo1.detalle_orden d ON d.fk_id_producto = r.fk_id_producto
-        WHERE d.fk_id_pedido = NEW.id_pedido
+        JOIN orden.detalle_pedido d ON d.id_plato = r.fk_id_plato
+        WHERE d.id_pedido = NEW.id_pedido
           AND i.id_insumos = r.fk_id_insumos;
 
     END IF;
@@ -157,9 +157,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_descontar_stock ON equipo1.ordenes;
+DROP TRIGGER IF EXISTS trg_descontar_stock ON orden.pedido;
 
 CREATE TRIGGER trg_descontar_stock
-AFTER UPDATE OF Estatus_Orden ON equipo1.ordenes
+AFTER UPDATE OF estado_orden ON orden.pedido
 FOR EACH ROW
 EXECUTE FUNCTION inventario.descontar_stock_por_receta();
